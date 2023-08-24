@@ -1,0 +1,32 @@
+{
+  "name": "prettier-plugin-twig",
+  "version": "0.1.0",
+  "description": "Twig Prettier Plugin ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install"
+  },
+  "keywords": [
+    "twig",
+    "prettier"
+  ],
+  "author": "setyo@pm.me",
+  "license": "MIT",
+  "devDependencies": {
+    "@commitlint/cli": "^17.7.1",
+    "@commitlint/config-conventional": "^17.7.0",
+    "@commitlint/prompt-cli": "^17.7.1",
+    "@types/jest": "^29.5.4",
+    "@types/node": "^20.5.4",
+    "commitizen": "^4.3.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^8.0.3",
+    "jest": "^29.6.3",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "prettier": "^3.0.2"
+  }
+}
