@@ -1,0 +1,47 @@
+import prettier from 'prettier'
+
+import Utils from '../util'
+
+const { softline, line, group, join, indent } = prettier.doc.builders
+const { findParentNode } = Utils
+
+const textMap = {
+	TestNullExpression: 'null',
+	TestDivisibleByExpression: 'divisible by',
+	TestDefinedExpression: 'defined',
+	TestEmptyExpression: 'empty',
+	TestEvenExpression: 'even',
+	TestOddExpression: 'odd',
+	TestIterableExpression: 'iterable',
+	TestSameAsExpression: 'same as',
+}
+
+const isNegator = (node) =>
+	node.constructor.name === 'UnarySubclass' && node.operator === 'not'
+
+export const printTestExpression = (node, path, print) => {
+	const expressionType = node.__proto__.type
+	const parts = [path.call(print, 'expression'), ' is ']
+	const parent = findParentNode(path)
+	const hasArguments =
+		Array.isArray(node.arguments) && node.arguments.length > 0
+	if (isNegator(parent)) {
+		parts.push('not ')
+	}
+	if (!textMap[expressionType]) {
+		console.error(
+			'TestExpression: No text for ' + expressionType + ' defined'
+		)
+	} else {
+		parts.push(textMap[expressionType])
+	}
+	if (hasArguments) {
+		const printedArguments = path.map(print, 'arguments')
+		const joinedArguments = join([',', line], printedArguments)
+		parts.push(
+			group(['(', indent([softline, joinedArguments]), softline, ')'])
+		)
+	}
+
+	return parts
+}
