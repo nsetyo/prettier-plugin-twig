@@ -48,16 +48,17 @@ export const ASSIGNMENT = '='
 export const ELEMENT_START = '<'
 export const SLASH = '/'
 export const ELEMENT_END = '>'
+export const ARROW_TYPE = '=>'
 export const NUMBER = 'number'
 export const EOF = 'EOF'
 export const ERROR = 'ERROR'
 export const EOF_TOKEN = {
 	type: EOF,
 	pos: {
-		index: -1,
 		line: -1,
-		pos: -1,
 		column: -1,
+		index: -1,
+		pos: -1,
 	},
 	end: -1,
 	length: 0,

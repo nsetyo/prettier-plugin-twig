@@ -1,3 +1,5 @@
+import { Node } from 'melody-types'
+
 export type Extension = {
 	tags: any[]
 	unaryOperators: any[]
@@ -19,4 +21,15 @@ export type Token = {
 	type: any
 	toString: () => string
 	endPos?: Position
+	message?: string
+	advice?: string
+}
+
+export class ArrowFunctionExpression extends Node {
+	constructor(
+		public args: any[],
+		public expr: Node
+	) {
+		super()
+	}
 }

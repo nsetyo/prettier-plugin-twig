@@ -1,4 +1,4 @@
-import { Printer } from 'prettier'
+import prettier, { AstPath, Printer } from 'prettier'
 
 import { ORIGINAL_SOURCE } from './parser'
 import { printAliasExpression } from './print/AliasExpression'
@@ -45,9 +45,14 @@ import { printUnaryExpression } from './print/UnaryExpression'
 import { printUnarySubclass } from './print/UnarySubclass'
 import { printUseStatement } from './print/UseStatement'
 import { printVariableDeclarationStatement } from './print/VariableDeclarationStatement'
+import { ArrowFunctionExpression } from './types'
 import Utils from './util'
 
 const { isWhitespaceNode, isHtmlCommentEqualTo, isTwigCommentEqualTo } = Utils
+
+const { group } = prettier.doc.builders
+
+type Doc = prettier.doc.builders.Doc
 
 const print_functions = {}
 
@@ -87,7 +92,7 @@ const checkForIgnoreEnd = (node) => {
 const shouldApplyIgnoreNext = (node) => !isWhitespaceNode(node)
 
 export const print: Printer<any>['print'] = (path, options, print) => {
-	const node = path.getValue()
+	const node = path.node
 	const nodeType = node.constructor.name
 
 	// Try to get the entire original source from AST root
@@ -237,6 +242,19 @@ print_functions['UnarySubclass'] = printUnarySubclass
 print_functions['UseStatement'] = printUseStatement
 print_functions['VariableDeclarationStatement'] =
 	printVariableDeclarationStatement
+
+print_functions['ArrowFunctionExpression'] = (
+	node: ArrowFunctionExpression,
+	path: AstPath,
+	print,
+	options
+): Doc => {
+	const arg_str = node.args.map((a) => a.name).join(', ')
+
+	const args = node.args.length > 1 ? `(${arg_str})` : arg_str
+
+	return group([args, ' => ', path.call(print, 'expr')])
+}
 
 // Fallbacks
 print_functions['String'] = (s) => s

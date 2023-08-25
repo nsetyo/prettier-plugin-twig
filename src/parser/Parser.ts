@@ -16,6 +16,8 @@
 import * as he from 'he'
 import * as n from 'melody-types'
 
+import { ArrowFunctionExpression } from '@/types'
+
 import { LEFT, RIGHT } from './Associativity'
 import { voidElements } from './ElementInfo'
 import { createMultiTagParser } from './GenericMultiTagParser'
@@ -275,7 +277,7 @@ export default class Parser {
 			} else if (currentToken.type === Types.STRING_START) {
 				const stringToken = tokens.expect(Types.STRING)
 				declaration.parts.push(
-					createNode(n.StringLiteral, stringToken, stringToken.text)
+					createNode(n.StringLiteral, stringToken, stringToken?.text)
 				)
 				tokens.expect(Types.STRING_END)
 			} else if (currentToken.type === Types.EXPRESSION_START) {
@@ -506,11 +508,12 @@ export default class Parser {
 	}
 
 	matchExpression(precedence = 0) {
-		const tokens = this.tokens,
-			exprStartToken = tokens.la(0)
-		let token,
-			op,
-			trimLeft = false
+		const tokens = this.tokens
+		const exprStartToken = tokens.la(0)
+
+		let token
+		let op
+		let trimLeft = false
 
 		// Check for {{- (trim preceding whitespace)
 		if (
@@ -521,6 +524,7 @@ export default class Parser {
 		}
 
 		let expr = this.getPrimary()
+
 		while (
 			(token = tokens.la(0)) &&
 			token.type !== Types.EOF &&
@@ -565,13 +569,40 @@ export default class Parser {
 	}
 
 	getPrimary() {
-		const tokens = this.tokens,
-			token = tokens.la(0)
+		const tokens = this.tokens
+		const token = tokens.la(0)
+
+		const next_six_token = [
+			tokens.la(0),
+			tokens.la(1),
+			tokens.la(2),
+			tokens.la(3),
+			tokens.la(4),
+			tokens.la(5),
+		]
+
+		const arrow_pos = next_six_token.findIndex(
+			(t) => t.type === Types.ARROW_TYPE
+		)
+
 		if (this.isUnary(token)) {
 			const op = this[UNARY][token.text]
 			tokens.next() // consume operator
 			const expr = this.matchExpression(op.precedence)
 			return this.matchPostfixExpression(op.createNode(token, expr))
+		} else if (
+			(tokens.test(Types.LPAREN) && arrow_pos === 5) ||
+			(tokens.test(Types.SYMBOL) && arrow_pos === 1)
+		) {
+			const args: any[] = tokens.test(Types.LPAREN)
+				? this.matchArguments()
+				: [createNode(n.Identifier, tokens.la(0), tokens.next().text)]
+
+			tokens.next() // consume the arrow
+
+			const body = this.matchExpression()
+
+			return new ArrowFunctionExpression(args, body)
 		} else if (tokens.test(Types.LPAREN)) {
 			tokens.next() // consume '('
 			const expr = this.matchExpression()
@@ -586,6 +617,7 @@ export default class Parser {
 		const tokens = this.tokens
 		const token = tokens.la(0)
 		let node
+
 		switch (token.type) {
 			case Types.NULL:
 				node = createNode(n.NullLiteral, tokens.next())
@@ -883,26 +915,32 @@ export default class Parser {
 					tokens.test(Types.RBRACE) ? null : this.matchExpression()
 				)
 				copyStart(result, node)
+
 				setEndFromToken(result, tokens.expect(Types.RBRACE))
+
 				return result
 			}
 		}
 	}
 
-	matchFilterExpression(node) {
+	matchFilterExpression(node: Node) {
 		const tokens = this.tokens
+
 		let target = node
+
 		while (!tokens.test(Types.EOF)) {
 			const token = tokens.expect(Types.SYMBOL)
+
 			const name = createNode(n.Identifier, token, token.text)
-			let args
-			if (tokens.test(Types.LPAREN)) {
-				args = this.matchArguments()
-			} else {
-				args = []
-			}
+
+			const args: any[] = tokens.test(Types.LPAREN)
+				? this.matchArguments()
+				: []
+
 			const newTarget = new n.FilterExpression(target, name, args)
+
 			copyStart(newTarget, target)
+
 			if (newTarget.arguments.length) {
 				copyEnd(
 					newTarget,
@@ -911,6 +949,7 @@ export default class Parser {
 			} else {
 				copyEnd(newTarget, target)
 			}
+
 			target = newTarget
 
 			if (!tokens.test(Types.PIPE) || tokens.test(Types.EOF)) {
@@ -919,26 +958,35 @@ export default class Parser {
 
 			tokens.next() // consume '|'
 		}
+
 		return target
 	}
 
 	matchArguments() {
 		const tokens = this.tokens
+
 		const args: any[] = []
+
 		tokens.expect(Types.LPAREN)
+
 		while (!tokens.test(Types.RPAREN) && !tokens.test(Types.EOF)) {
 			if (
 				tokens.test(Types.SYMBOL) &&
 				tokens.lat(1) === Types.ASSIGNMENT
 			) {
 				const name = tokens.next()
+
 				tokens.next()
+
 				const value = this.matchExpression()
+
 				const arg = new n.NamedArgumentExpression(
 					createNode(n.Identifier, name, name.text),
 					value
 				)
+
 				copyEnd(arg, value)
+
 				args.push(arg)
 			} else {
 				args.push(this.matchExpression())
@@ -946,11 +994,13 @@ export default class Parser {
 
 			if (!tokens.test(Types.COMMA)) {
 				tokens.expect(Types.RPAREN)
+
 				return args
 			}
 			tokens.expect(Types.COMMA)
 		}
 		tokens.expect(Types.RPAREN)
+
 		return args
 	}
 }

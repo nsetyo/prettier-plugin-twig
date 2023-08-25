@@ -1,6 +1,6 @@
 import { extension as core_ext } from 'melody-extension-core'
 import { Node } from 'melody-types'
-import prettier from 'prettier'
+import prettier, { AstPath } from 'prettier'
 
 import Utils from '../util'
 
@@ -69,7 +69,7 @@ const otherNeedsParentheses = (node, otherProp) => {
 	)
 }
 
-const __printBinaryExpression = (node, path, print) => {
+const __printBinaryExpression = (node, path: AstPath, print) => {
 	node[EXPRESSION_NEEDED] = false
 	node[STRING_NEEDS_QUOTES] = true
 
@@ -107,6 +107,7 @@ const __printBinaryExpression = (node, path, print) => {
 	const printedRight = path.call(print, 'right')
 
 	const parts: any[] = []
+
 	const leftNeedsParens = otherNeedsParentheses(node, 'left')
 	const rightNeedsParens = otherNeedsParentheses(node, 'right')
 
@@ -146,7 +147,7 @@ const __printBinaryExpression = (node, path, print) => {
 	return shouldGroupResult ? group(result) : result
 }
 
-export const printBinaryExpression = (node, path, print, options) => {
+export const printBinaryExpression = (node, path: AstPath, print, options) => {
 	if (Node.isBinaryConcatExpression(node) && node.wasImplicitConcatenation) {
 		return printInterpolatedString(node, path, print, options)
 	}
