@@ -47,7 +47,7 @@ const applyParserExtensions = (parser: Parser, ...extensions) => {
 	}
 }
 
-export const parse = (text: string, parsers, opt: ParserOptions<any>): any => {
+export const parse = (text: string, opt: ParserOptions<any>): any => {
 	const lexer = createConfiguredLexer(text, core_ext)
 
 	const token_stream = new TokenStream(lexer, {
