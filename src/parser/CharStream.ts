@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-export const EOF = Symbol()
+import { Position } from '@/types'
 
-export type Position = { line: number; column: number }
-export type Marker = Position & { index: number }
+export const EOF = Symbol()
 
 export class CharStream {
 	input: string
@@ -29,7 +28,7 @@ export class CharStream {
 		this.input = String(input)
 		this.length = this.input.length
 		this.index = 0
-		this.position = { line: 1, column: 0 }
+		this.position = { line: 1, column: 0, index: 0 }
 	}
 
 	get source() {
@@ -40,14 +39,14 @@ export class CharStream {
 		this.rewind({ line: 1, column: 0, index: 0 })
 	}
 
-	mark(): Marker {
+	mark(): Position {
 		const { line, column } = this.position
 		const index = this.index
 
 		return { line, column, index }
 	}
 
-	rewind(marker: Marker) {
+	rewind(marker: Position) {
 		this.position.line = marker.line
 		this.position.column = marker.column
 		this.index = marker.index

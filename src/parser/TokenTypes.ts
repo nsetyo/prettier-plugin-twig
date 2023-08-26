@@ -57,6 +57,7 @@ export const EOF_TOKEN = {
 		index: -1,
 		line: -1,
 		pos: -1,
+		column: -1,
 	},
 	end: -1,
 	length: 0,

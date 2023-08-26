@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CharStream, EOF, Marker } from './CharStream'
+import { Position, Token } from '@/types'
+
+import { CharStream, EOF } from './CharStream'
 import * as TokenTypes from './TokenTypes'
 
 const State = {
@@ -48,17 +50,6 @@ const CHAR_TO_TOKEN = {
 	//'<': TokenTypes.ELEMENT_START,
 	//'>': TokenTypes.ELEMENT_END,
 	'/': TokenTypes.SLASH,
-}
-
-type Token = {
-	end: number
-	length: number
-	pos: any
-	source: string | null
-	text: string
-	type: any
-	toString: () => string
-	endPos?: Marker
 }
 
 export default class Lexer {
@@ -429,7 +420,7 @@ export default class Lexer {
 		const start = input.mark()
 
 		let longestMatchingOperator = ''
-		let longestMatchEndPos: Marker = {} as Marker
+		let longestMatchEndPos: Position = {} as Position
 
 		for (let i = 0, ops = this[OPERATORS], len = ops.length; i < len; i++) {
 			const op: string = ops[i]

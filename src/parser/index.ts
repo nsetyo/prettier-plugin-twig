@@ -1,14 +1,16 @@
 import { extension as core_ext } from 'melody-extension-core'
 import { ParserOptions } from 'prettier'
 
-import { CharStream } from './CharStream'
+import { CharStream } from '@/parser/CharStream'
+import { Extension } from '@/types'
+
 import Lexer from './Lexer'
 import Parser from './Parser'
 import TokenStream from './TokenStream'
 
 export const ORIGINAL_SOURCE = Symbol('ORIGINAL_SOURCE')
 
-const createConfiguredLexer = (code, ...extensions) => {
+const createConfiguredLexer = (code: string, ...extensions: Extension[]) => {
 	const lexer = new Lexer(new CharStream(code))
 
 	for (const ext of extensions) {
@@ -22,7 +24,7 @@ const createConfiguredLexer = (code, ...extensions) => {
 	return lexer
 }
 
-const applyParserExtensions = (parser: Parser, ...extensions) => {
+const applyParserExtensions = (parser: Parser, ...extensions: Extension[]) => {
 	for (const extension of extensions) {
 		if (extension.tags) {
 			for (const tag of extension.tags) {
@@ -62,7 +64,6 @@ export const parse = (text: string, opt: ParserOptions<any>): any => {
 		ignoreHtmlComments: false,
 		ignoreDeclarations: false,
 		decodeEntities: false,
-		// allowUnknownTags: true,
 	})
 
 	applyParserExtensions(parser, core_ext)
@@ -70,14 +71,14 @@ export const parse = (text: string, opt: ParserOptions<any>): any => {
 	return Object.assign(parser.parse(), { [ORIGINAL_SOURCE]: text })
 }
 
-export const hasPragma = (/* text */) => {
+export const hasPragma = () => {
 	return false
 }
 
-export const locStart = (/* node */) => {
+export const locStart = () => {
 	return -1
 }
 
-export const locEnd = (/* node */) => {
+export const locEnd = () => {
 	return -1
 }
