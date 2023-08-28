@@ -1,0 +1,6 @@
+dist/*.spec.js
+node_modules/
+src/
+tests/
+.vscode/
+.husky/

@@ -1,11 +1,14 @@
 {
-	"name": "prettier-plugin-twig",
-	"version": "0.1.0",
+	"name": "@nsetyo/prettier-plugin-twig",
+	"version": "0.1.1",
 	"description": "Twig Prettier Plugin ",
 	"main": "index.js",
 	"scripts": {
 		"test": "NODE_OPTIONS=--experimental-vm-modules jest",
 		"watch:test": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
+		"build": "tsc --pretty",
+		"watch": "npm run build -- --watch",
+		"release": "npm run build && npm publish --access public",
 		"prepare": "husky install"
 	},
 	"keywords": [
