@@ -26,9 +26,7 @@ export const parsers: { [parserName: string]: Parser<any> } = {
 }
 
 export const printers: { [astFormat: string]: Printer<any> } = {
-	twig: {
-		print,
-	},
+	twig: { print },
 }
 
 export const options: SupportOptions = {}

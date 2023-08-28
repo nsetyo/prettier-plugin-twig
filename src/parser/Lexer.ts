@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { EOF, OPERATORS, STATE, STRING_START } from '../symbols'
 import { Position, Token } from '../types'
-import { CharStream, EOF } from './CharStream'
+import { CharStream } from './CharStream'
 import * as TokenTypes from './TokenTypes'
 
 const State = {
@@ -28,10 +29,6 @@ const State = {
 	ATTRIBUTE_VALUE: 'ATTRIBUTE_VALUE',
 	DECLARATION: 'DECLARATION',
 }
-
-const OPERATORS = Symbol()
-const STATE = Symbol()
-const STRING_START = Symbol()
 
 const CHAR_TO_TOKEN = {
 	'[': TokenTypes.LBRACE,

@@ -2,6 +2,7 @@ import { extension as core_ext } from 'melody-extension-core'
 import { Node } from 'melody-types'
 import prettier, { AstPath } from 'prettier'
 
+import { ALREADY_INDENTED, OPERATOR_PRECEDENCE } from '../symbols'
 import Utils from '../util'
 
 const { group, line, softline, indent } = prettier.doc.builders
@@ -17,8 +18,6 @@ const {
 	wrapExpressionIfNeeded,
 } = Utils
 
-const ALREADY_INDENTED = Symbol('ALREADY_INDENTED')
-const OPERATOR_PRECEDENCE = Symbol('OPERATOR_PRECEDENCE')
 const NO_WHITESPACE_AROUND = ['..']
 
 const operatorPrecedence = core_ext.binaryOperators.reduce((acc, curr) => {

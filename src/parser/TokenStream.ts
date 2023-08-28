@@ -17,6 +17,7 @@ import trimEnd from 'lodash/trimEnd'
 import trimStart from 'lodash/trimStart'
 import codeFrame from 'melody-code-frame'
 
+import { LENGTH, TOKENS } from '../symbols'
 import { Position, Token } from '../types'
 import Lexer from './Lexer'
 import {
@@ -33,9 +34,6 @@ import {
 	TEXT,
 	WHITESPACE,
 } from './TokenTypes'
-
-const TOKENS = Symbol()
-const LENGTH = Symbol()
 
 export default class TokenStream {
 	input: Lexer

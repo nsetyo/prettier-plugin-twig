@@ -1,13 +1,12 @@
 import { extension as core_ext } from 'melody-extension-core'
 import { ParserOptions } from 'prettier'
 
+import { ORIGINAL_SOURCE } from '../symbols'
 import { Extension } from '../types'
 import { CharStream } from './CharStream'
 import Lexer from './Lexer'
 import Parser from './Parser'
 import TokenStream from './TokenStream'
-
-export const ORIGINAL_SOURCE = Symbol('ORIGINAL_SOURCE')
 
 const createConfiguredLexer = (code: string, ...extensions: Extension[]) => {
 	const lexer = new Lexer(new CharStream(code))

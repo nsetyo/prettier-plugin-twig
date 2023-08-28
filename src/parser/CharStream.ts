@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
+import { EOF } from '../symbols'
 import { Position } from '../types'
-
-export const EOF = Symbol()
 
 export class CharStream {
 	input: string

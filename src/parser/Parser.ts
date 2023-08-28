@@ -16,8 +16,8 @@
 import * as he from 'he'
 import * as n from 'melody-types'
 
+import { BINARY, LEFT, RIGHT, TAG, TEST, UNARY } from '../symbols'
 import { ArrowFunctionExpression } from '../types'
-import { LEFT, RIGHT } from './Associativity'
 import { voidElements } from './ElementInfo'
 import { createMultiTagParser } from './GenericMultiTagParser'
 import { GenericTagParser } from './GenericTagParser'
@@ -46,11 +46,6 @@ type BinaryOperator = {
 	associativity: typeof LEFT | typeof RIGHT
 	parse: Function
 }
-
-const UNARY = Symbol()
-const BINARY = Symbol()
-const TAG = Symbol()
-const TEST = Symbol()
 
 export default class Parser {
 	tokens: TokenStream

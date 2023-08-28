@@ -35,10 +35,11 @@ export function setEndFromToken(
 
 export function setMarkFromToken(
 	node: Node,
-	propertyName,
+	prop: string,
 	{ pos: { index, line, column } }: Token
 ) {
-	node[propertyName] = { line, column, index }
+	node[prop] = { line, column, index }
+
 	return node
 }
 
@@ -83,7 +84,12 @@ export function copyLoc(node, { loc: { start, end } }) {
 }
 
 export function createNode(Type, token, ...args) {
-	return setEndFromToken(setStartFromToken(new Type(...args), token), token)
+	const node = setEndFromToken(
+		setStartFromToken(new Type(...args), token),
+		token
+	)
+
+	return Object.assign(node, { node_type: node.constructor.name })
 }
 
 export function startNode(Type, token, ...args) {
@@ -96,17 +102,4 @@ export function hasTagStartTokenTrimLeft(token) {
 
 export function hasTagEndTokenTrimRight(token) {
 	return token.text.startsWith('-')
-}
-
-export function isMelodyExtension(obj) {
-	return (
-		obj &&
-		(Array.isArray(obj.binaryOperators) ||
-			typeof obj.filterMap === 'object' ||
-			typeof obj.functionMap === 'object' ||
-			Array.isArray(obj.tags) ||
-			Array.isArray(obj.tests) ||
-			Array.isArray(obj.unaryOperators) ||
-			Array.isArray(obj.visitors))
-	)
 }

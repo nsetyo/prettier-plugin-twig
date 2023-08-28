@@ -95,6 +95,8 @@ export const print: Printer<any>['print'] = (path, options, print) => {
 	const node = path.node
 	const nodeType = node.constructor.name
 
+	console.log({ node })
+
 	// Try to get the entire original source from AST root
 	if (node[ORIGINAL_SOURCE]) {
 		originalSource = node[ORIGINAL_SOURCE]
