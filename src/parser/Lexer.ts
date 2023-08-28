@@ -57,10 +57,11 @@ export default class Lexer {
 	options: Record<string, any>
 
 	constructor(input: CharStream, { preserveSourceLiterally = false } = {}) {
-		this.input = input
 		this[STATE] = [State.TEXT]
 		this[OPERATORS] = []
 		this[STRING_START] = null
+
+		this.input = input
 		this.options = {
 			preserveSourceLiterally:
 				preserveSourceLiterally === true ? true : false,
@@ -103,10 +104,10 @@ export default class Lexer {
 		this[STATE].length--
 	}
 
-	createToken(type, pos): Token {
+	createToken(type: string, pos: Position): Token {
 		const input = this.input
 		const endPos = input.mark()
-		const end = endPos.index
+		const end = endPos.index || -1
 
 		return {
 			end,
@@ -124,7 +125,9 @@ export default class Lexer {
 
 	next(): Token {
 		const input = this.input
-		let pos, c
+
+		let pos: Position
+		let c: string | typeof EOF
 
 		while ((c = input.la(0)) !== EOF) {
 			pos = input.mark()
@@ -164,6 +167,7 @@ export default class Lexer {
 					input.next()
 				}
 			}
+
 			if (this.state === State.TEXT) {
 				let entityToken
 
@@ -194,7 +198,9 @@ export default class Lexer {
 									this.error(
 										'Unexpected end for HTML comment',
 										input.mark(),
-										`Expected comment to end with '>' but found '${c}' instead.`
+										`Expected comment to end with '>' but found '${String(
+											c
+										)}' instead.`
 									)
 								}
 								break
@@ -345,8 +351,9 @@ export default class Lexer {
 		}
 	}
 
-	matchExpression(pos) {
+	matchExpression(pos: Position) {
 		const input = this.input
+
 		const c = input.la(0) as string
 
 		switch (c) {
@@ -384,7 +391,9 @@ export default class Lexer {
 				}
 				const { longestMatchingOperator, longestMatchEndPos } =
 					this.findLongestMatchingOperator()
+
 				const cc = input.lac(0)
+
 				if (cc === 95 /* _ */ || isAlpha(cc) || isDigit(cc)) {
 					// okay... this could be either a symbol or an operator
 					input.next()
@@ -392,16 +401,24 @@ export default class Lexer {
 					if (sym.text.length <= longestMatchingOperator.length) {
 						// the operator was longer so let's use that
 						input.rewind(longestMatchEndPos)
+
 						return this.createToken(TokenTypes.OPERATOR, pos)
 					}
 					// found a symbol
 					return sym
+				} else if (cc === 61 && input.lac(1) === 62) {
+					input.next()
+					input.next()
+
+					return this.createToken(TokenTypes.ARROW_TYPE, pos)
 				} else if (longestMatchingOperator) {
 					input.rewind(longestMatchEndPos)
+
 					return this.createToken(TokenTypes.OPERATOR, pos)
 					// eslint-disable-next-line no-prototype-builtins
 				} else if (CHAR_TO_TOKEN.hasOwnProperty(c)) {
 					input.next()
+
 					return this.createToken(CHAR_TO_TOKEN[c], pos)
 				} else if (c === '\xa0') {
 					return this.error(
@@ -422,8 +439,13 @@ export default class Lexer {
 		let longestMatchingOperator = ''
 		let longestMatchEndPos: Position = {} as Position
 
-		for (let i = 0, ops = this[OPERATORS], len = ops.length; i < len; i++) {
+		const ops = this[OPERATORS]
+
+		const len = ops.length
+
+		for (let i = 0; i < len; i++) {
 			const op: string = ops[i]
+
 			if (op.length > longestMatchingOperator.length && input.match(op)) {
 				const cc = input.lac(0)
 
@@ -672,14 +694,14 @@ export default class Lexer {
 	}
 }
 
-function isWhitespace(c) {
-	return c === '\n' || c === ' ' || c === '\t'
+function isWhitespace(c: string | typeof EOF) {
+	return c !== EOF && (c === '\n' || c === ' ' || c === '\t')
 }
 
-function isAlpha(c) {
-	return (65 <= c && c <= 90) || (97 <= c && c <= 122)
+function isAlpha(c: number | typeof EOF) {
+	return c !== EOF && ((65 <= c && c <= 90) || (97 <= c && c <= 122))
 }
 
-function isDigit(c) {
-	return 48 <= c && c <= 57
+function isDigit(c: number | typeof EOF) {
+	return c !== EOF && 48 <= c && c <= 57
 }

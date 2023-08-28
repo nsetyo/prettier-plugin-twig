@@ -1,3 +1,6 @@
+import { Node } from 'melody-types'
+
+import { Token } from '@/types'
 /**
  * Copyright 2017 trivago N.V.
  *
@@ -13,43 +16,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export function setStartFromToken(node, { pos: { index, line, column } }) {
+export function setStartFromToken(
+	node: Node,
+	{ pos: { index, line, column } }: Token
+) {
 	node.loc.start = { line, column, index }
+
 	return node
 }
 
-export function setEndFromToken(node, { pos: { line, column }, end }) {
+export function setEndFromToken(
+	node: Node,
+	{ pos: { line, column }, end }: Token
+) {
 	node.loc.end = { line, column, index: end }
 	return node
 }
 
 export function setMarkFromToken(
-	node,
+	node: Node,
 	propertyName,
-	{ pos: { index, line, column } }
+	{ pos: { index, line, column } }: Token
 ) {
 	node[propertyName] = { line, column, index }
 	return node
 }
 
 export function copyStart(
-	node,
+	node: Node,
 	{
 		loc: {
 			start: { line, column, index },
 		},
-	}
+	}: Node
 ) {
 	node.loc.start.line = line
 	node.loc.start.column = column
 	node.loc.start.index = index
+
 	return node
 }
 
-export function copyEnd(node, end) {
+export function copyEnd(node: Node, end: Node) {
 	node.loc.end.line = end.loc.end.line
 	node.loc.end.column = end.loc.end.column
 	node.loc.end.index = end.loc.end.index
+
 	return node
 }
 

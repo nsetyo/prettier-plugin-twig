@@ -49,16 +49,18 @@ export class CharStream {
 	rewind(marker: Position) {
 		this.position.line = marker.line
 		this.position.column = marker.column
-		this.index = marker.index
+		this.index = marker.index || -1
 	}
 
 	la(offset: number) {
 		const index = this.index + offset
+
 		return index < this.length ? this.input.charAt(index) : EOF
 	}
 
 	lac(offset: number) {
 		const index = this.index + offset
+
 		return index < this.length ? this.input.charCodeAt(index) : EOF
 	}
 
@@ -68,7 +70,9 @@ export class CharStream {
 		}
 		const ch = this.input.charAt(this.index)
 		this.index++
+
 		this.position.column++
+
 		if (ch === '\n') {
 			this.position.line += 1
 			this.position.column = 0

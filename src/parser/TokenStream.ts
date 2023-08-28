@@ -17,6 +17,8 @@ import trimEnd from 'lodash/trimEnd'
 import trimStart from 'lodash/trimStart'
 import codeFrame from 'melody-code-frame'
 
+import { Position, Token } from '@/types'
+
 import Lexer from './Lexer'
 import {
 	COMMENT,
@@ -38,7 +40,9 @@ const LENGTH = Symbol()
 
 export default class TokenStream {
 	input: Lexer
-	index: number
+	index: number;
+
+	[TOKENS]: Token[]
 
 	constructor(lexer: Lexer, options) {
 		this.input = lexer
@@ -55,56 +59,60 @@ export default class TokenStream {
 		this[TOKENS] = getAllTokens(lexer, mergedOptions)
 		this[LENGTH] = this[TOKENS].length
 
-		if (
-			this[TOKENS].length &&
-			this[TOKENS][this[TOKENS].length - 1].type === ERROR
-		) {
-			const errorToken = this[TOKENS][this[TOKENS].length - 1]
+		if (this[TOKENS].length && this[TOKENS].at(-1)?.type === ERROR) {
+			const errorToken = this[TOKENS].at(-1) as Token
+
+			const endPosIndex = errorToken?.endPos?.index || 0
+			const posIndex = errorToken?.pos.index || 1
+
 			this.error(
-				errorToken.message,
+				errorToken.message || '',
 				errorToken.pos,
-				errorToken.advice,
-				errorToken.endPos.index - errorToken.pos.index || 1
+				errorToken.advice || '',
+				endPosIndex - posIndex
 			)
 		}
 	}
 
-	la(offset) {
+	la(offset: number): Token {
 		const index = this.index + offset
+
 		return index < this[LENGTH] ? this[TOKENS][index] : EOF_TOKEN
 	}
 
-	lat(offset) {
+	lat(offset: number) {
 		return this.la(offset).type
 	}
 
-	test(type, text?) {
+	test(type: string, text?: string) {
 		const token = this.la(0)
+
 		return token.type === type && (!text || token.text === text)
 	}
 
-	next() {
+	next(): Token {
 		if (this.index === this[LENGTH]) {
 			return EOF_TOKEN
 		}
 		const token = this[TOKENS][this.index]
+
 		this.index++
+
 		return token
 	}
 
-	nextIf(type, text?) {
-		if (this.test(type, text)) {
-			return this.next()
-		}
-		return false
+	nextIf(type: string, text?: string) {
+		return this.test(type, text) ? this.next() : false
 	}
 
-	expect(type, text?) {
+	expect(type: string, text?: string): Token | never {
 		const token = this.la(0)
+
 		if (token.type === type && (!text || token.text === text)) {
 			return this.next()
 		}
-		this.error(
+
+		return this.error(
 			'Invalid Token',
 			token.pos,
 			`Expected ${ERROR_TABLE[type] || type || text} but found ${
@@ -114,7 +122,13 @@ export default class TokenStream {
 		)
 	}
 
-	error(message, pos, advice, length = 1, metadata = {}) {
+	error(
+		message: string,
+		pos: Position,
+		advice: string,
+		length = 1,
+		metadata = {}
+	): never {
 		let errorMessage = `ERROR: ${message}\n`
 
 		errorMessage += codeFrame({
@@ -140,16 +154,18 @@ export default class TokenStream {
 	}
 }
 
-function getAllTokens(lexer: Lexer, options) {
-	const tokens: any = []
+function getAllTokens(lexer: Lexer, options): Token[] {
+	const tokens: Token[] = []
 
-	let token
+	let token: Token
 	let acceptWhitespaceControl = false
 	let trimNext = false
 
 	while ((token = lexer.next()) !== EOF_TOKEN) {
 		const shouldTrimNext = trimNext
+
 		trimNext = false
+
 		if (acceptWhitespaceControl) {
 			switch (token.type) {
 				case EXPRESSION_START:
@@ -166,17 +182,23 @@ function getAllTokens(lexer: Lexer, options) {
 						trimNext = true
 					}
 					break
-				case COMMENT:
-					if (tokens[tokens.length - 1].type === TEXT) {
-						tokens[tokens.length - 1].text = trimEnd(tokens.text)
+				case COMMENT: {
+					const ltoken = tokens.at(-1)
+
+					if (ltoken && ltoken.type === TEXT) {
+						ltoken.text = trimEnd(ltoken.text)
 					}
+
 					trimNext = true
 					break
+				}
 			}
 		}
+
 		if (shouldTrimNext && (token.type === TEXT || token.type === STRING)) {
 			token.text = trimStart(token.text)
 		}
+
 		if (
 			(token.type !== COMMENT || !options.ignoreComments) &&
 			(token.type !== WHITESPACE || !options.ignoreWhitespace) &&
@@ -184,10 +206,13 @@ function getAllTokens(lexer: Lexer, options) {
 		) {
 			tokens[tokens.length] = token
 		}
+
 		acceptWhitespaceControl = options.applyWhitespaceTrimming
+
 		if (token.type === ERROR) {
 			return tokens
 		}
 	}
+
 	return tokens
 }

@@ -1,0 +1,11 @@
+{% set sizes = [34, 36, 38, 40, 42] %}
+
+{{ sizes|filter(  (v, k) => v > 38) |join(', ') }}
+
+{{ sizes|filter(  v => v > 38) |join(', ') }}
+
+{{ sizes|filter(  (v => v > 38)) |join(', ') }}
+
+{% for k, v in sizes|filter((v, k) => v > 38 and k != "xl") -%}
+    {{ k }} = {{ v }}
+{% endfor %}
