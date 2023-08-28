@@ -1,8 +1,8 @@
 {
 	"name": "@nsetyo/prettier-plugin-twig",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "Twig Prettier Plugin ",
-	"main": "index.js",
+	"main": "dist/index.js",
 	"scripts": {
 		"test": "NODE_OPTIONS=--experimental-vm-modules jest",
 		"watch:test": "NODE_OPTIONS=--experimental-vm-modules jest --watch",

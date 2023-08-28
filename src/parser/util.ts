@@ -1,6 +1,6 @@
 import { Node } from 'melody-types'
 
-import { Token } from '@/types'
+import { Token } from '../types'
 /**
  * Copyright 2017 trivago N.V.
  *

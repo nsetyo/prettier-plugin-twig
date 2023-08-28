@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Position } from '@/types'
+import { Position } from '../types'
 
 export const EOF = Symbol()
 

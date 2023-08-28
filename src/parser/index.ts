@@ -1,9 +1,8 @@
 import { extension as core_ext } from 'melody-extension-core'
 import { ParserOptions } from 'prettier'
 
-import { CharStream } from '@/parser/CharStream'
-import { Extension } from '@/types'
-
+import { Extension } from '../types'
+import { CharStream } from './CharStream'
 import Lexer from './Lexer'
 import Parser from './Parser'
 import TokenStream from './TokenStream'

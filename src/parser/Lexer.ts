@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Position, Token } from '@/types'
-
+import { Position, Token } from '../types'
 import { CharStream, EOF } from './CharStream'
 import * as TokenTypes from './TokenTypes'
 

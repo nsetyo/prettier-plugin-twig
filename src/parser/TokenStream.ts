@@ -17,8 +17,7 @@ import trimEnd from 'lodash/trimEnd'
 import trimStart from 'lodash/trimStart'
 import codeFrame from 'melody-code-frame'
 
-import { Position, Token } from '@/types'
-
+import { Position, Token } from '../types'
 import Lexer from './Lexer'
 import {
 	COMMENT,

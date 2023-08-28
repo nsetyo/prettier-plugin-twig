@@ -16,8 +16,7 @@
 import * as he from 'he'
 import * as n from 'melody-types'
 
-import { ArrowFunctionExpression } from '@/types'
-
+import { ArrowFunctionExpression } from '../types'
 import { LEFT, RIGHT } from './Associativity'
 import { voidElements } from './ElementInfo'
 import { createMultiTagParser } from './GenericMultiTagParser'
