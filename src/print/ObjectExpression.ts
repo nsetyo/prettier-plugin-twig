@@ -22,7 +22,11 @@ export const printObjectExpression = (
 	node[EXPRESSION_NEEDED] = false
 
 	const contains_invalid_Key = node.properties.some((prop) => {
-		return !isValidIdentifierName(prop.key.value)
+		const value = n.Node.isStringLiteral(prop.key)
+			? prop.key.value
+			: prop.key.name
+
+		return !isValidIdentifierName(value)
 	})
 
 	if (options.quoteProps === 'consistent' && contains_invalid_Key) {
