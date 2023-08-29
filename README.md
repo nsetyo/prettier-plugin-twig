@@ -18,7 +18,7 @@ Add plugin in prettier config (e.g: .prettierrc)
 
 ```json
 {
-	"plugins": ["@nsetyo/prettier-plugin-twig"]
+    "plugins": ["@nsetyo/prettier-plugin-twig"]
 }
 ```
 

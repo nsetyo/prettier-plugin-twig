@@ -16,8 +16,8 @@
 import * as he from 'he'
 import * as n from 'melody-types'
 
+import { BINARY, LEFT, RIGHT, TAG, TEST, UNARY } from '../symbols'
 import { ArrowFunctionExpression } from '../types'
-import { LEFT, RIGHT } from './Associativity'
 import { voidElements } from './ElementInfo'
 import { createMultiTagParser } from './GenericMultiTagParser'
 import { GenericTagParser } from './GenericTagParser'
@@ -46,11 +46,6 @@ type BinaryOperator = {
 	associativity: typeof LEFT | typeof RIGHT
 	parse: Function
 }
-
-const UNARY = Symbol()
-const BINARY = Symbol()
-const TAG = Symbol()
-const TEST = Symbol()
 
 export default class Parser {
 	tokens: TokenStream
@@ -781,17 +776,24 @@ export default class Parser {
 
 	matchMap() {
 		const tokens = this.tokens
-		const obj = new n.ObjectExpression()
+
+		const obj = Object.assign(new n.ObjectExpression(), {
+			node_type: 'ObjectExpression',
+		})
+
 		const startToken = tokens.expect(Types.LBRACKET)
 
 		let token
+
 		setStartFromToken(obj, startToken)
+
 		while (!tokens.test(Types.RBRACKET) && !tokens.test(Types.EOF)) {
 			let computed = false
 			let key
 
 			if (tokens.test(Types.STRING_START)) {
 				key = this.matchStringExpression()
+
 				if (!n.is(key, 'StringLiteral')) {
 					computed = true
 				}
@@ -801,6 +803,7 @@ export default class Parser {
 				key = createNode(n.NumericLiteral, token, Number(token.text))
 			} else if (tokens.test(Types.LPAREN)) {
 				key = this.matchExpression()
+
 				computed = true
 			} else {
 				this.error({

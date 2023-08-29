@@ -1,6 +1,5 @@
 import prettier, { AstPath, Printer } from 'prettier'
 
-import { ORIGINAL_SOURCE } from './parser'
 import { printAliasExpression } from './print/AliasExpression'
 import { printArrayExpression } from './print/ArrayExpression'
 import { printAttribute } from './print/Attribute'
@@ -45,6 +44,7 @@ import { printUnaryExpression } from './print/UnaryExpression'
 import { printUnarySubclass } from './print/UnarySubclass'
 import { printUseStatement } from './print/UseStatement'
 import { printVariableDeclarationStatement } from './print/VariableDeclarationStatement'
+import { ORIGINAL_SOURCE } from './symbols'
 import { ArrowFunctionExpression } from './types'
 import Utils from './util'
 

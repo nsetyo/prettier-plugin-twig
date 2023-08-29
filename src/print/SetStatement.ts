@@ -84,6 +84,7 @@ const printEmbracingSet = (node, path, print) => {
 
 export const printSetStatement = (node, path, print) => {
 	node[STRING_NEEDS_QUOTES] = true
+
 	if (isEmbracingSet(node)) {
 		return printEmbracingSet(node, path, print)
 	}

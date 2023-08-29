@@ -1,6 +1,6 @@
 {
 	"name": "@nsetyo/prettier-plugin-twig",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"description": "Twig Prettier Plugin ",
 	"main": "dist/index.js",
 	"scripts": {

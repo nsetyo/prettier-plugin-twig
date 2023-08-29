@@ -26,6 +26,8 @@ export type Token = {
 }
 
 export class ArrowFunctionExpression extends Node {
+	public node_type = 'ArrowFunctionExpression'
+
 	constructor(
 		public args: any[],
 		public expr: Node

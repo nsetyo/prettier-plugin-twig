@@ -1,6 +1,7 @@
 import { Node } from 'melody-types'
 import prettier from 'prettier'
 
+import { IS_ELSEIF } from '../symbols'
 import Utils from '../util'
 const { group, indent, line, hardline } = prettier.doc.builders
 const { EXPRESSION_NEEDED, printChildBlock } = Utils
@@ -9,8 +10,6 @@ const {
 	PRESERVE_LEADING_WHITESPACE,
 	PRESERVE_TRAILING_WHITESPACE,
 } = Utils
-
-const IS_ELSEIF = Symbol('IS_ELSEIF')
 
 export const printIfStatement = (node, path, print) => {
 	node[EXPRESSION_NEEDED] = false
