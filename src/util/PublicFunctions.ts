@@ -144,8 +144,9 @@ export const quoteChar = (options) => {
 	return options && options.twigSingleQuote ? "'" : '"'
 }
 
-const isValidIdentifierName = (s) => {
+export const isValidIdentifierName = (s: unknown) => {
 	const identifierRegex = /^[A-Z][0-9A-Z_$]*$/i
+
 	return typeof s === 'string' && identifierRegex.test(s)
 }
 

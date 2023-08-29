@@ -776,17 +776,24 @@ export default class Parser {
 
 	matchMap() {
 		const tokens = this.tokens
-		const obj = new n.ObjectExpression()
+
+		const obj = Object.assign(new n.ObjectExpression(), {
+			node_type: 'ObjectExpression',
+		})
+
 		const startToken = tokens.expect(Types.LBRACKET)
 
 		let token
+
 		setStartFromToken(obj, startToken)
+
 		while (!tokens.test(Types.RBRACKET) && !tokens.test(Types.EOF)) {
 			let computed = false
 			let key
 
 			if (tokens.test(Types.STRING_START)) {
 				key = this.matchStringExpression()
+
 				if (!n.is(key, 'StringLiteral')) {
 					computed = true
 				}
@@ -796,6 +803,7 @@ export default class Parser {
 				key = createNode(n.NumericLiteral, token, Number(token.text))
 			} else if (tokens.test(Types.LPAREN)) {
 				key = this.matchExpression()
+
 				computed = true
 			} else {
 				this.error({
